@@ -28,20 +28,20 @@ RUN pip3 install -e /home/issm/app/issm-common-services/
 COPY --chown=issm:issm ./issm-common-database-setup/setup.py /home/issm/app/issm-common-database-setup/setup.py
 RUN pip3 install -e /home/issm/app/issm-common-database-setup/
 
-COPY --chown=issm:issm ./llm-as-judge/setup.py /home/issm/app/llm-as-judge/setup.py
-RUN pip3 install -e /home/issm/app/llm-as-judge/
+COPY --chown=issm:issm ./graph-rag/setup.py /home/issm/app/graph-rag/setup.py
+RUN pip3 install -e /home/issm/app/graph-rag/
 
 COPY --chown=issm:issm ./issm-api-common /home/issm/app/issm-api-common
 COPY --chown=issm:issm ./issm-common-database-setup /home/issm/app/issm-common-database-setup
 COPY --chown=issm:issm ./issm-common-services /home/issm/app/issm-common-services
-COPY --chown=issm:issm ./llm-as-judge /home/issm/app/llm-as-judge
+COPY --chown=issm:issm ./graph-rag /home/issm/app/graph-rag
 
 
 #################################################################################
 #### Deliverable ###
 #################################################################################
-FROM build AS llm-as-judge
+FROM build AS graph-rag
 USER issm
 
 # No WORKDIR change needed - inherits /home/issm from tooling
-ENTRYPOINT ["python", "-m", "llm_as_judge.app"]
+ENTRYPOINT ["python", "-m", "graph_rag.app"]

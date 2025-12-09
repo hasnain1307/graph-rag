@@ -4,7 +4,7 @@ from issm_api_common.api.exceptions import (
     ObjectNotFoundException,
 )
 from issm_common_services.api.products.products_model import Product
-from llm_as_judge.api.products.dependencies import (
+from graph_rag.api.products.dependencies import (
     get_product_service,
     ProductService,
 )

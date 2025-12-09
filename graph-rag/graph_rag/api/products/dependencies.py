@@ -1,5 +1,5 @@
-from llm_as_judge.api.products.services import ProductService
-from llm_as_judge import injector
+from graph_rag.api.products.services import ProductService
+from graph_rag import injector
 
 
 def get_product_service() -> ProductService:

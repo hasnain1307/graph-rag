@@ -5,8 +5,8 @@ from fastapi_pagination import add_pagination
 import uvicorn
 
 # Import routes for different services
-from llm_as_judge.api.products.routes import router as product_router
-from llm_as_judge.logger import logger
+from graph_rag.api.products.routes import router as product_router
+from graph_rag.logger import logger
 
 # Import exception handlers and database setup
 from issm_api_common.api.exceptions import (
@@ -14,7 +14,7 @@ from issm_api_common.api.exceptions import (
     UniqueKeyViolationException,
 )
 from issm_common_database_setup.mongo import BeanieDBClient
-from llm_as_judge import injector
+from graph_rag import injector
 
 
 @asynccontextmanager
@@ -113,4 +113,4 @@ app = create_application()
 
 # Optional: If you want to run with uvicorn directly
 if __name__ == "__main__":
-    uvicorn.run("llm_as_judge.app:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("graph_rag.app:app", host="0.0.0.0", port=8000, reload=True)

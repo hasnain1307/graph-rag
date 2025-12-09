@@ -10,12 +10,6 @@ x-common-fastapi-healthcheck: &common-fastapi-healthcheck
   timeout: 5s
   retries: 3
   start_period: 10s
-x-common-express-healthcheck: &common-express-healthcheck
-  test: ["CMD", "curl", "-f", "http://localhost:3010/health"]
-  interval: 5s
-  timeout: 5s
-  retries: 3
-  start_period: 10s
 x-common-mongo-healthcheck: &common-mongo-healthcheck
   test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
   interval: 10s
@@ -53,7 +47,7 @@ services:
   
   mongo-db:
     image: *mongo-image
-    container_name: digital_eye_mongo_db
+    container_name: graph_rag_mongo_db
     volumes:
       - ./data/mongo:/data/db
     env_file:
@@ -68,7 +62,7 @@ services:
       context: .
       dockerfile: graph-rag/Dockerfile
       target: graph-rag
-    container_name: llm_as_judge_service
+    container_name: graph_rag_service
     volumes:
       - ./graph-rag:/home/issm/app/graph-rag/
       - ./issm-api-common:/home/issm/app/issm-api-common/
@@ -76,7 +70,7 @@ services:
       - ./issm-common-database-setup:/home/issm/app/issm-common-database-setup/
     healthcheck: *common-fastapi-healthcheck
     ports:
-      - "${LLM_AS_JUDGE_SERVICE_PORT}:8000"
+      - "${GRAPH_RAG_SERVICE_PORT}:8000"
     depends_on:
       mongo-db:
         condition: service_healthy
