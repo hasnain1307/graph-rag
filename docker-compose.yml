@@ -1,0 +1,85 @@
+version: "3.9"
+
+x-common-fastapi-healthcheck: &common-fastapi-healthcheck
+  test:
+    [
+      "CMD-SHELL",
+      "wget --quiet --tries=1 --spider http://localhost:8000/ || exit 1",
+    ]
+  interval: 5s
+  timeout: 5s
+  retries: 3
+  start_period: 10s
+x-common-express-healthcheck: &common-express-healthcheck
+  test: ["CMD", "curl", "-f", "http://localhost:3010/health"]
+  interval: 5s
+  timeout: 5s
+  retries: 3
+  start_period: 10s
+x-common-mongo-healthcheck: &common-mongo-healthcheck
+  test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+  interval: 10s
+  timeout: 10s
+  retries: 5
+  start_period: 40s
+x-common-nginx-healthcheck: &common-nginx-healthcheck
+  test: ["CMD-SHELL", "wget -O /dev/null http://localhost || exit 1"]
+  interval: 5s
+  timeout: 5s
+  retries: 3
+  start_period: 10s
+x-common-restart-policy: &common-restart-policy "no"
+x-mongo-image: &mongo-image mongo:latest
+
+services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: digital_eye_nginx_server
+    ports:
+      - "80:80"
+      #- "443:443"
+    depends_on:
+      graph-rag:
+        condition: service_healthy
+    volumes:
+      #- nginx:/etc/letsencrypt          # Docker managed volume (see list at the bottom)
+      - ./nginx/conf:/etc/nginx/conf.d
+      #- /etc/letsencrypt:/etc/letsencrypt
+      #- ./nginx/user_conf.d:/etc/nginx/user_conf.d
+    healthcheck: *common-nginx-healthcheck
+    restart: *common-restart-policy
+  
+  mongo-db:
+    image: *mongo-image
+    container_name: digital_eye_mongo_db
+    volumes:
+      - ./data/mongo:/data/db
+    env_file:
+      - .env
+    ports:
+      - 27017:27017
+    healthcheck: *common-mongo-healthcheck
+    restart: *common-restart-policy
+    
+  graph-rag:
+    build:
+      context: .
+      dockerfile: graph-rag/Dockerfile
+      target: graph-rag
+    container_name: llm_as_judge_service
+    volumes:
+      - ./graph-rag:/home/issm/app/graph-rag/
+      - ./issm-api-common:/home/issm/app/issm-api-common/
+      - ./issm-common-services:/home/issm/app/issm-common-services/
+      - ./issm-common-database-setup:/home/issm/app/issm-common-database-setup/
+    healthcheck: *common-fastapi-healthcheck
+    ports:
+      - "${LLM_AS_JUDGE_SERVICE_PORT}:8000"
+    depends_on:
+      mongo-db:
+        condition: service_healthy
+    env_file:
+      - .env
+    restart: *common-restart-policy
