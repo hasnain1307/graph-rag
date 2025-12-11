@@ -23,15 +23,19 @@ requirements = [
     "cryptography==42.0.5",
     "slowapi==0.1.9",
     "zeep==4.2.1",
-    "arize-phoenix-evals>=2.0.0",
-    "openai>=1.0.0",
-    "pandas>=1.0.0",
-    "numpy>=1.21.0"
+    "arize-phoenix-evals==2.0.0",
+    "openai>=1.40.0,<2.0.0",  # ✅ Compatible with langchain-openai
+    "pandas==2.2.2",
+    "numpy==1.26.4",
+    "langchain==0.2.14",
+    "langchain-core==0.2.38",
+    "langchain-openai==0.1.22",
+    "neo4j==5.15.0"
 ]
 
 setuptools.setup(
     name="llm-as-judge",
     setup_requires=["pip"],
     install_requires=requirements,
-    packages=setuptools.find_packages(),  # Add this line
+    packages=setuptools.find_packages(),
 )

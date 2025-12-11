@@ -1,7 +1,6 @@
 from injector import singleton, provider, inject, Module
-
-from graph_rag.api.products.services import ProductService
-from issm_common_database_setup.mongo import BeanieDBClient
+from neo4j import GraphDatabase, Driver
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
 from issm_api_common.config.urls import config
 
 
@@ -9,11 +8,17 @@ class InjectorConfiguration(Module):
     @singleton
     @provider
     @inject
-    def provide_mongo_db_client(self) -> BeanieDBClient:
-        return BeanieDBClient(config.mongo_database_conn_str)
+    def provide_neo4j_client(self) -> Driver:
+        return GraphDatabase.driver(config.neo4j_bolt_uri, auth=config.neo4j_auth)
 
     @singleton
     @provider
     @inject
-    def provide_product_service(self) -> ProductService:
-        return ProductService()
+    def provide_pgvector_client(self) -> AsyncEngine:
+        engine = create_async_engine(
+            url=config.pgvector_async_url,
+            pool_size=20,
+            max_overflow=10,
+            echo=False
+        )
+        return engine

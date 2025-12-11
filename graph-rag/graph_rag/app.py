@@ -5,7 +5,7 @@ from fastapi_pagination import add_pagination
 import uvicorn
 
 # Import routes for different services
-from graph_rag.api.products.routes import router as product_router
+from graph_rag.api.docs_ingestion.routes import router as docs_ingestion_router
 from graph_rag.logger import logger
 
 # Import exception handlers and database setup
@@ -29,9 +29,9 @@ async def lifespan(app: FastAPI):
         None
     """
     # Initialize Beanie DB Client
-    db_client = injector.get(BeanieDBClient)
-    # Initialize Beanie models
-    await db_client.init_beanie()
+    # db_client = injector.get(BeanieDBClient)
+    # # Initialize Beanie models
+    # await db_client.init_beanie()
     # Optional: Add any additional startup tasks
     logger.info("Application startup complete")
     yield
@@ -69,7 +69,7 @@ def create_application() -> FastAPI:
     # Add pagination support
     add_pagination(app)
 
-    app.include_router(product_router, prefix="/api/v1/products", tags=["Products"])
+    app.include_router(docs_ingestion_router, prefix="/api/v1/docs_ingestion_router", tags=["Docs Ingestion"])
 
     # Custom exception handlers
     @app.exception_handler(ObjectNotFoundException)
