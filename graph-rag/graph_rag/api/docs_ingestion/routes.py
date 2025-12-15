@@ -8,7 +8,7 @@ from graph_rag.api.docs_ingestion.models import (
 from graph_rag.api.docs_ingestion.services import GraphIngestionService
 from graph_rag.api.docs_ingestion.dependencies import get_graph_ingestion_service
 
-router = APIRouter(prefix="/graph", tags=["Graph Ingestion"])
+router = APIRouter()
 
 
 @router.post(
